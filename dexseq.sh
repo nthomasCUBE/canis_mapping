@@ -34,8 +34,31 @@ set_default=function(){
 #
 #       ---------------------------------------------------
 set_real_data=function(){
+
+	NAMES=list()
+	NAMES["L7_RX_CGATGT_OSCA_8_10M.fastq.count"]="T"
+	NAMES["Bella_C_AGTCAA_L007_RX_20M.fastq.count"]="T"
+	NAMES["L6_RX_GGCTAC_OSCA_32_Mono_Bone_10M.fastq.count"]="C"
+	NAMES["Gus_N_CTTGTA_L007_RX_20M.fastq.count"]="T"
+	NAMES["OSCA_30_cells_ACTTGA_L006_RX_20M.fastq.count"]="C"
+	NAMES["OSCA_78_cells_CAGATC_L006_RX_20M.fastq.count"]="C"
+	NAMES["X1033_ACAGTG_L006_RX_20M.fastq.count"]="T"
+	NAMES["L7_RX_ATCACG_OSCA_73_Tissue_10M.fastq.count"]="T"
+	NAMES["X440_TGACCA_L006_RX_20M.fastq.count"]="T"
+	NAMES["Oso_D_GGCTAC_L007_RX_20M.fastq.count"]="T"
+	NAMES["X320_TTAGGC_L006_RX_20M.fastq.count"]="T"
+	NAMES["L6_RX_ACTTGA_OSCA_8_Mono_Bone_10M.fastq.count"]="C"
+	NAMES["X1091_GCCAAT_L006_RX_20M.fastq.count"]="T"
+	NAMES["Osca_40_cells_GATCAG_L007_RX_20M.fastq.count"]="C"
+	NAMES["L7_RX_CTTGTA_OSCA_71_Tissue_10M.fastq.count"]="T"
+
 	countData=read.csv("h1_merge_counts_counts.txt",sep="\t",header=T,row.names=1)
-	sampleData=data.frame(condition=c(rep("treated",7),rep("untreated",8)))
+	sampleDataArr=c()
+	for(i in 1:dim(countData)[2]){
+		sampleDataArr=c(sampleDataArr,NAMES[colnames(countData)][i][[1]])
+	}
+	print(sampleDataArr)
+	sampleData=data.frame(condition=sampleDataArr)
         design <- formula( ~ sample + exon + condition:exon )
         d=read.csv("h1_merge_counts_length.txt",sep="\t",header=T)
 	groupID=d[,3]
