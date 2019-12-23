@@ -2,6 +2,14 @@ import string
 import os
 import sys
 
+GC={}
+fh=file("exon_gc.txt")
+for line in fh.readlines():
+	line=line.strip()
+	vals=line.split("\t")
+	if(len(vals)>1):
+		GC[vals[0]]=vals[1]
+
 fh=file("Canis_lupus_dingo.ASM325472v1.98.gtf")
 C_L={}
 G_MAP={}
@@ -15,12 +23,12 @@ for line in fh.readlines():
 		C_L[c_id]=c_l
 		G_MAP[c_id]=g_id
 
-files=os.listdir(".")
+files=os.listdir("COUNT")
 MAP={}
 ALL={}
 for files_ in files:
 	if(files_.find(".count")!=-1):
-		fh=file(files_)
+		fh=file("COUNT/"+files_)
 		for line in fh.readlines():
 			line=line.strip()
 			vals=line.split("\t")
@@ -46,9 +54,9 @@ for MAP_ in MAP:
 fw.close()
 
 fw=file("h1_merge_counts_length.txt","w")
-fw.write("exon_id\tlength\tgene_id\n")
+fw.write("exon_id\tlength\tgene_id\tgc_cont\n")
 for MAP_ in MAP:
-	fw.write(MAP_+"\t"+str(C_L[MAP_])+"\t"+G_MAP[MAP_]+"\n")
+	fw.write(MAP_+"\t"+str(C_L[MAP_])+"\t"+G_MAP[MAP_]+"\t"+GC[MAP_]+"\n")
 fw.close()
 
 
