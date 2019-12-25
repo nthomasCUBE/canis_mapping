@@ -2,15 +2,36 @@ import string
 import os
 import sys
 
-GC={}
-fh=file("exon_gc.txt")
-for line in fh.readlines():
-	line=line.strip()
-	vals=line.split("\t")
-	if(len(vals)>1):
-		GC[vals[0]]=vals[1]
 
-fh=file("Canis_lupus_dingo.ASM325472v1.98.gtf")
+flattened=True
+species="familaris"
+
+if(species=="familaris"):
+	my_file="Canis_familiaris.CanFam3.1.98.gtf"
+elif(species=="dingo"):
+	my_file="Canis_lupus_dingo.ASM325472v1.98.gtf"
+else:
+	print("species information missing")
+	sys.exit()
+
+if(flattened==True):
+	main_dir="COUNT2"
+else:
+	main_dir="COUNT"
+
+GC={}
+try:
+	fh=file("exon_gc.txt")
+	for line in fh.readlines():
+		line=line.strip()
+		vals=line.split("\t")
+		if(len(vals)>1):
+			GC[vals[0]]=vals[1]
+except Exception:
+	print "no exon_gc.txt information exists"
+
+
+fh=file(my_file)
 C_L={}
 G_MAP={}
 for line in fh.readlines():
@@ -23,12 +44,12 @@ for line in fh.readlines():
 		C_L[c_id]=c_l
 		G_MAP[c_id]=g_id
 
-files=os.listdir("COUNT")
+files=os.listdir(main_dir)
 MAP={}
 ALL={}
 for files_ in files:
 	if(files_.find(".count")!=-1):
-		fh=file("COUNT/"+files_)
+		fh=file(main_dir+"/"+files_)
 		for line in fh.readlines():
 			line=line.strip()
 			vals=line.split("\t")
@@ -38,7 +59,7 @@ for files_ in files:
 				MAP[vals[0]][files_]=vals[1]
 				ALL[files_]=1
 
-fw=file("h1_merge_counts_counts.txt","w")
+fw=file("h1_merge_counts_counts_flattened_%s.txt" % flattened,"w")
 arr=["gene"]
 for ALL_ in ALL:
 	arr.append(ALL_)
@@ -53,10 +74,13 @@ for MAP_ in MAP:
 	fw.write(string.join(arr,"\t")+"\n")
 fw.close()
 
-fw=file("h1_merge_counts_length.txt","w")
+fw=file("h1_merge_counts_length_flattened_%s.txt" % flattened,"w")
 fw.write("exon_id\tlength\tgene_id\tgc_cont\n")
 for MAP_ in MAP:
-	fw.write(MAP_+"\t"+str(C_L[MAP_])+"\t"+G_MAP[MAP_]+"\t"+GC[MAP_]+"\n")
+	if(GC.get(MAP_)!=None):
+		fw.write(MAP_+"\t"+str(C_L[MAP_])+"\t"+G_MAP[MAP_]+"\t"+GC[MAP_]+"\n")
+	else:
+                fw.write(MAP_+"\t"+str("-1")+"\t"+"-1"+"\t"+"-1"+"\n")
 fw.close()
 
 
