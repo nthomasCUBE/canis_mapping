@@ -19,14 +19,24 @@ echo "-------------------------------------------------------------"
 
 echo "starting hisat2 mapping"
 
-date
+for A in $(ls ../_old/canis/raw_reads/raw_reads/*fastq | sort | grep "" | grep "_R1_")
+do
+        date
+        echo $A
+        B=$(ls $A | sed 's/_R1_/_R2_/g')
+        C=$(ls $A | sed 's/_R1_/_RX_/g')
+        C=$(basename $C)
 
-head -n 10000 ../_old/canis/raw_reads/raw_reads/1033_ACAGTG_L006_R1_20M.fastq > 1033_1.fastq
-head -n 10000 ../_old/canis/raw_reads/raw_reads/1033_ACAGTG_L006_R2_20M.fastq > 1033_2.fastq
+        hisat2 -p 16 -x ${SHORT_NAME} -1 ${A} -2 ${B} -S ${C}.sam
 
-hisat2 -p 16 -x ${SHORT_NAME} -1 1033_1.fastq -2 1033_2.fastq -S 1033.sam
+        echo $A
+        echo $B
+        echo $C
+        date
+done
 
 echo "end hisat2 mapping"
 
 date
 
+echo "-------------------------------------------------------------"
